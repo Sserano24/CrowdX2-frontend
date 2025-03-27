@@ -1,51 +1,20 @@
-"use client";
+import { GalleryVerticalEnd } from "lucide-react"
 
-
-import { useRouter} from "next/navigation"
-
-
-
-const LOGIN_URL = "/api/login/"
-
+import { LoginForm } from "@/components/loginForm"
 
 export default function Page() {
-    const router = useRouter()
-    async function handleSubmit(event) {
-        event.preventDefault(); // Prevents default form submission
-        console.log(event, event.target);
 
-        const formData = new FormData(event.target)
-        const objectFormForm = Object.fromEntries(formData)
-        const jsonData = JSON.stringify(objectFormForm)
-        const requestOptions = {
-            method: "POST",
-            headers: {
-              
-                "Content-Type": "appplication/json"
-            },
-            body: jsonData
-
-        }
-        const response = await fetch(LOGIN_URL,requestOptions)
-        const data = await response.json()
-        if (response.ok){
-            console.log("Logged In")
-            router. replace("/")
-            
-
-        }
-    }
-
-    return (
-        <div className="h-[95vh]">
-            <div className="max-w-md mx-auto py-5"> 
-                <h1>Login Here</h1>
-                <form onSubmit={handleSubmit}>
-                    <input type="text" required name="username" placeholder="Your Username" />
-                    <input type="password" required name="password" placeholder="Your Password" />
-                    <button type="submit">Login</button>
-                </form>
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <a href="#" className="flex items-center gap-2 self-center font-medium">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <GalleryVerticalEnd className="size-4" />
+          </div>
+          CrowdX Inc.
+        </a>
+        <LoginForm />
+      </div>
+    </div>
+  )
 }

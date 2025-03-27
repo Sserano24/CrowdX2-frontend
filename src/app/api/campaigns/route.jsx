@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getToken } from "@/app/lib/auth";
+import { getToken } from "@/lib/auth";
 
 const DJANGO_API_CAMPAIGNS_URL = "http://127.0.0.1:8001/api/campaigns/";  // ✅ Fixed typo
 
