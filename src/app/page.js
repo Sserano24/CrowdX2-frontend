@@ -1,201 +1,96 @@
 "use client"
-import {useState} from 'react'
-import Image from "next/image";
-import useSWR from 'swr';
-import { useAuth } from "@/components/authProvider";
-import { ThemeToggleButton } from '@/components/themeToggleButton';
 
 import Link from "next/link";
-
-
-
-const fetcher = (...args) => fetch(...args).then(res => res.json())
+import { ShieldCheckIcon, UsersIcon, LightBulbIcon } from '@heroicons/react/24/outline';
 
 export default function Home() {
-  const auth = useAuth()
-  const {data, error, isLoading} = useSWR("http://127.0.0.1:8001/api/hello",
-    fetcher)
-    if (error) return <div>failed to load</div>
-    if (isLoading) return <div>loading...</div>
-
+  const features = [
+    {
+      icon: <ShieldCheckIcon className="w-16 h-16 text-blue-600" />,
+      title: "Secure & Reliable",
+      desc: "Smart contracts & Web3 protect your funds and data.",
+    },
+    {
+      icon: <UsersIcon className="w-16 h-16 text-blue-600" />,
+      title: "Effortless Collaboration",
+      desc: "Connect, manage, and update your supporters easily.",
+    },
+    {
+      icon: <LightBulbIcon className="w-16 h-16 text-blue-600" />,
+      title: "Built for Innovation",
+      desc: "Designed to help you launch fast and scale smart.",
+    },
+  ];
 
   return (
-//     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-//       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-//         <div>
-//           {auth.isAuthenticated ? "Hello User": "Hello guest"}
-//         </div>
-//         <div>
-//           {JSON.stringify(data)}
-//         </div>
-//         <div>
-//           <ThemeToggleButton/>
-//         </div>
-//         <Image
-//           className="dark:invert"
-//           src="/next.svg"
-//           alt="Next.js logo"
-//           width={180}
-//           height={38}
-//           priority
-//         />
-//         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-//           <li className="mb-2 tracking-[-.01em]">
-//             Get started by editing{" "}
-//             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-//               src/app/page.js
-//             </code>
-//             .
-//           </li>
-//           <li className="tracking-[-.01em]">
-//             Save and see your changes instantly.
-//           </li>
-//         </ol>
-
-//         <div className="flex gap-4 items-center flex-col sm:flex-row">
-//           <a
-//             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-//             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             <Image
-//               className="dark:invert"
-//               src="/vercel.svg"
-//               alt="Vercel logomark"
-//               width={20}
-//               height={20}
-//             />
-//             Deploy now
-//           </a>
-//           <a
-//             className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-//             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             Read our docs
-//           </a>
-//         </div>
-//       </main>
-//       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-//         <a
-//           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-//           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/file.svg"
-//             alt="File icon"
-//             width={16}
-//             height={16}
-//           />
-//           Learn
-//         </a>
-//         <a
-//           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-//           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/window.svg"
-//             alt="Window icon"
-//             width={16}
-//             height={16}
-//           />
-//           Examples
-//         </a>
-//         <a
-//           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-//           href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/globe.svg"
-//             alt="Globe icon"
-//             width={16}
-//             height={16}
-//           />
-//           Go to nextjs.org →
-//         </a>
-//       </footer>
-//     </div>
-//   );
-// }
-
-<div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col font-sans bg-gradient-to-b from-white to-gray-100 dark:from-black dark:to-gray-900">
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 bg-white shadow-md dark:bg-black dark:text-white">
-        <h1 className="text-2xl font-bold text-primary">CrowdX</h1>
-        <div className="flex gap-6">
-          <Link href="/signup" className="hover:underline">Sign Up</Link>
-          <Link href="/login" className="hover:underline">Login</Link>
-          <Link href="/about" className="hover:underline">About</Link>
+      <nav className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur shadow-md dark:bg-black/80 dark:text-white sticky top-0 z-50">
+        <h1 className="text-2xl font-bold text-blue-600">CrowdX</h1>
+        <div className="flex gap-6 text-sm font-medium">
+          <Link href="/signup" className="hover:text-blue-600 transition">Sign Up</Link>
+          <Link href="/login" className="hover:text-blue-600 transition">Login</Link>
+          <Link href="/about" className="hover:text-blue-600 transition">About</Link>
         </div>
       </nav>
 
-      {/* Content */}
-      <main className="flex-grow p-8 space-y-20">
-        {/* Features Section */}
-        <section className="features text-center">
-          <h2 className="text-3xl font-bold mb-10">Why Choose CrowdX?</h2>
-          <div className="grid gap-10 sm:grid-cols-3">
-            <div className="feature flex flex-col items-center gap-3">
-              <Image src="/secure.svg" alt="Secure" width={64} height={64} />
-              <h3 className="text-xl font-semibold">Secure & Reliable</h3>
-              <p className="text-sm text-muted-foreground">
-                We prioritize security and reliability to protect your data.
-              </p>
-            </div>
-            <div className="feature flex flex-col items-center gap-3">
-              <Image src="/collaboration.svg" alt="Collaboration" width={64} height={64} />
-              <h3 className="text-xl font-semibold">Effortless Collaboration</h3>
-              <p className="text-sm text-muted-foreground">
-                Work with your team in real-time with powerful tools.
-              </p>
-            </div>
-            <div className="feature flex flex-col items-center gap-3">
-              <Image src="/innovation.svg" alt="Innovation" width={64} height={64} />
-              <h3 className="text-xl font-semibold">Innovate with Ease</h3>
-              <p className="text-sm text-muted-foreground">
-                Our intuitive platform makes project management a breeze.
-              </p>
-            </div>
-          </div>
-        </section>
+      {/* Hero Section */}
+      <section className="text-center py-24 px-6 bg-white dark:bg-gray-950">
+        <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-800 dark:text-white leading-tight">Empowering Projects with Secure Crowdfunding</h2>
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-xl mx-auto mb-10">
+          Launch your vision with transparency, security, and real-time community engagement.
+        </p>
+        <div className="flex justify-center gap-4">
+          <Link href="/campaigns" className="px-6 py-3 bg-blue-600 text-white rounded-md text-lg hover:bg-blue-700 transition">Explore Campaigns</Link>
+          <Link href="/create" className="px-6 py-3 border border-blue-600 text-blue-600 rounded-md text-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition">Start a Campaign</Link>
+        </div>
+      </section>
 
-        {/* How It Works Section */}
-        <section className="how-it-works text-center">
-          <h2 className="text-3xl font-bold mb-10">How It Works</h2>
-          <div className="grid gap-10 sm:grid-cols-3">
-            <div className="step flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">1. Create a Project</h3>
-              <p>Tell funders what you are trying to build.</p>
-              <p>Set funding goals and payout milestones.</p>
+      {/* Features */}
+      <section className="py-20 px-6 text-center">
+        <h3 className="text-3xl font-bold mb-12 text-gray-800 dark:text-white">Why Choose CrowdX?</h3>
+        <div className="grid sm:grid-cols-3 gap-10 max-w-6xl mx-auto">
+          {features.map((feature, index) => (
+            <div key={index} className="flex flex-col items-center gap-4">
+              {feature.icon}
+              <h4 className="text-xl font-semibold text-blue-600">{feature.title}</h4>
+              <p className="text-gray-600 dark:text-gray-400 max-w-xs">{feature.desc}</p>
             </div>
-            <div className="step flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">2. Connect with Backers</h3>
-              <p>Engage with a community of supporters.</p>
-              <p>View comments and concerns from potential supporters.</p>
+          ))}
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20 px-6 text-center bg-blue-50 dark:bg-gray-800">
+        <h3 className="text-3xl font-bold mb-12 text-gray-800 dark:text-white">How It Works</h3>
+        <div className="grid sm:grid-cols-3 gap-10 max-w-6xl mx-auto text-left">
+          {[
+            {
+              title: "1. Create a Project",
+              steps: ["Describe your vision.", "Set goals and payout milestones."],
+            },
+            {
+              title: "2. Connect with Backers",
+              steps: ["Build trust with updates.", "Engage with real-time feedback."],
+            },
+            {
+              title: "3. Achieve Your Goals",
+              steps: ["Receive funds milestone-by-milestone.", "Deliver results transparently."]
+            }
+          ].map((step, index) => (
+            <div key={index} className="flex flex-col gap-3">
+              <h4 className="text-xl font-semibold text-blue-700">{step.title}</h4>
+              <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
+                {step.steps.map((line, i) => <li key={i}>{line}</li>)}
+              </ul>
             </div>
-            <div className="step flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">3. Achieve Your Goals</h3>
-              <p>Receive your funds and bring your project to life!</p>
-              <p>Continue to update your project to keep supporters engaged.</p>
-            </div>
-          </div>
-        </section>
-      </main>
+          ))}
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="p-6 text-center text-sm text-muted-foreground">
-        &copy; {new Date().getFullYear()} CrowdX. All rights reserved.
+      <footer className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        &copy; {new Date().getFullYear()} CrowdX. Built with transparency in mind.
       </footer>
     </div>
   );
