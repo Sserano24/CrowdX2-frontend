@@ -3,7 +3,7 @@
 import useSWR from 'swr'
 import { useEffect, useState } from 'react'
 
-const CAMPAIGN_API_URL = 'http://localhost:8000/api/campaigns'
+const CAMPAIGN_API_URL = 'http://localhost:8001/api/campaigns'
 
 const fetcher = async (url) => {
   const res = await fetch(url)
@@ -23,7 +23,7 @@ export default function CampaignsPage() {
     if (!data) return
 
     const sockets = data.map((campaign) => {
-      const socket = new WebSocket(`ws://localhost:8000/ws/campaigns/${campaign.id}/`)
+      const socket = new WebSocket(`ws://localhost:8001/ws/campaigns/${campaign.id}/`)
       socket.onmessage = (event) => {
         const update = JSON.parse(event.data)
         setCampaigns((prev) =>
@@ -37,10 +37,10 @@ export default function CampaignsPage() {
   }, [data])
 
   const handleDonate = async () => {
-    const res = await fetch('http://localhost:8000/api/payments/checkout', {
+    const res = await fetch('http://localhost:8001/api/payments/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount: 10 })
+      body: JSON.stringify({ amount: 10, campaign_id: 3 })
     })
     const data = await res.json()
     if (data.url) {

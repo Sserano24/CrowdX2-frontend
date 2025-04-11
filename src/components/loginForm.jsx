@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from 'next/navigation'
 import { useState } from "react";
 
 const LOGIN_URL = "/api/login/";
 
 export function LoginForm({ className, ...props }) {
+  const router = useRouter()
   const auth = useAuth();
   const [error, setError] = useState(null);
 
@@ -38,6 +40,7 @@ export function LoginForm({ className, ...props }) {
       if (response.ok) {
         console.log("Logged In");
         auth.login();
+        router.push('/dashboard')
       } else {
         setError(data?.message || "Login failed");
       }
