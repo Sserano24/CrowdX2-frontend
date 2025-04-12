@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-const SIGNUP_URL = "http://127.0.0.1:8001/api/accounts/signup";
+const SIGNUP_URL = "/api/signup"; // ✅ calls your own Next.js server action
+
 
 export default function Page() {
   const [status, setStatus] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    const objectFormForm = Object.fromEntries(formData);
-    const jsonData = JSON.stringify(objectFormForm);
+
+    const formData = new FormData(event.target); //get form data
+    const objectFormForm = Object.fromEntries(formData); //make into Object
+    const jsonData = JSON.stringify(objectFormForm);  //turn into JSON
 
     const requestOptions = {
       method: "POST",
