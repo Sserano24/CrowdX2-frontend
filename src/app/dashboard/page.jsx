@@ -55,10 +55,9 @@ export default function DashboardPage() {
   return (
     <SidebarProvider>
       <AppSidebar>
-        <SidebarItem label="Dashboard Home" href="/dashboard" />
-        <SidebarItem label="All Campaigns" href="/dashboard/campaigns" />
-        <SidebarItem label="My Campaigns" href="/dashboard/my-campaigns" />
-        <SidebarItem label="Create Campaign" href="/dashboard/create" />
+        <SidebarItem label="All Campaigns" href="/dashboard" />
+        <SidebarItem label="My 6Campaigns" href="/dashboard/my-campaigns" />
+        <SidebarItem label="Create Campaign" href="/create" />
         <SidebarItem label="Edit Account" href="/dashboard/account" />
         <SidebarItem label="Logout" href="/logout" />
       </AppSidebar>

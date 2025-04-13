@@ -42,10 +42,9 @@ export function AppSidebar(props) {
       </SidebarHeader>
 
       <SidebarContent className="space-y-2">
-        <SidebarItem label="Dashboard Home" href="/dashboard" icon={LayoutDashboard} />
-        <SidebarItem label="All Campaigns" href="/dashboard/campaigns" icon={ListChecks} />
+        <SidebarItem label="All Campaigns" href="/dashboard" icon={ListChecks} />
         <SidebarItem label="My Campaigns" href="/dashboard/my-campaigns" icon={User} />
-        <SidebarItem label="Create Campaign" href="/dashboard/create" icon={PlusSquare} />
+        <SidebarItem label="Create Campaign" href="/create" icon={PlusSquare} />
         <SidebarItem label="Edit Account" href="/dashboard/account" icon={Settings2} />
         <SidebarItem label="Logout" href="/logout" icon={LogOut} />
       </SidebarContent>

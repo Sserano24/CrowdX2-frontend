@@ -21,7 +21,7 @@ export default function MyCampaignsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Campaigns</h1>
         <Link
-          href="/dashboard/create"
+          href="/create"
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
         >
           + Create Campaign

@@ -1,17 +1,42 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 const DJANGO_API_URL = "http://127.0.0.1:8001/api/campaigns/mine";
+const DJANGO_REFRESH_URL = "http://127.0.0.1:8001/api/token/refresh";
+const TOKEN_NAME = "auth-token";
+const REFRESH_TOKEN_NAME = "auth-refresh-token";
 
 export async function GET(request) {
   try {
-    // Step 1: Extract cookies from the incoming request
-    const cookieHeader = request.headers.get("cookie") || "";
+    const cookieStore = await cookies();  // ← Await here
+    let accessToken = cookieStore.get(TOKEN_NAME)?.value;
+    const refreshToken = cookieStore.get(REFRESH_TOKEN_NAME)?.value
 
-    // Step 2: Look for the auth-token (access token) in the cookies
-    const match = cookieHeader.match(/auth-token=([^;]+)/);
-    const accessToken = match?.[1];
+    // If no access token, try refresh
+    if (!accessToken && refreshToken) {
+      const refreshRes = await fetch(DJANGO_REFRESH_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh: refreshToken }),
+      });
 
-    // Step 3: If no token is found, return 401 Unauthorized
+      if (refreshRes.ok) {
+        const refreshData = await refreshRes.json();
+        accessToken = refreshData.access;
+        cookieStore.set(TOKEN_NAME, accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== "development",
+          sameSite: "strict",
+          maxAge: 3600,
+        });
+      } else {
+        return NextResponse.json(
+          { error: "Unauthorized: Token refresh failed" },
+          { status: 401 }
+        );
+      }
+    }
+
     if (!accessToken) {
       return NextResponse.json(
         { error: "Unauthorized: No token" },
@@ -19,7 +44,6 @@ export async function GET(request) {
       );
     }
 
-    // Step 4: Send a request to Django backend with the token in the header
     const res = await fetch(DJANGO_API_URL, {
       method: "GET",
       headers: {
@@ -28,15 +52,11 @@ export async function GET(request) {
       },
     });
 
-    // Clone the response to safely fall back to text if JSON parsing fails
     const resClone = res.clone();
-
     let data;
     try {
-      // Step 5: Attempt to parse response as JSON
       data = await res.json();
-    } catch (err) {
-      // If JSON parsing fails, fall back to reading it as raw text
+    } catch {
       const rawText = await resClone.text();
       return NextResponse.json(
         { error: "Django returned non-JSON response", raw: rawText },
@@ -44,7 +64,6 @@ export async function GET(request) {
       );
     }
 
-    // Step 6: If the Django API returns an error status, forward the message
     if (!res.ok) {
       return NextResponse.json(
         { error: data.detail || "Failed to fetch user campaigns" },
@@ -52,11 +71,8 @@ export async function GET(request) {
       );
     }
 
-    // Step 7: Return the campaigns data as JSON with a 200 OK status
     return NextResponse.json(data, { status: 200 });
-
   } catch (error) {
-    // Catch-all for unexpected server errors
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

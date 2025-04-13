@@ -3,19 +3,30 @@ const {cookies} = require("next/headers")
 const TOKEN_AGE = 3600
 const TOKEN_NAME = "auth-token"
 const TOKEN_REFRESH_NAME = "auth-refresh-token"
+const isBrowser = typeof window !== "undefined";
 
 
-export async function getToken(){
-    const cookieStore = await cookies();  // ✅ Await is now valid
-    const myAuthToken = cookieStore.get(TOKEN_NAME);
-    return myAuthToken?.value;
-}
-
-export async function getRefreshToken(){
-    const cookieStore = await cookies();  // ✅ Await cookies() before using it
-    const myAuthToken = cookieStore.get(TOKEN_REFRESH_NAME);
-    return myAuthToken?.value;
-}
+export async function getToken() {
+    if (isBrowser) {
+      const match = document.cookie.match(/auth-token=([^;]+)/);
+      return match?.[1] || null;
+    } else {
+      const { cookies } = await import("next/headers");
+      const cookieStore = cookies();
+      return cookieStore.get(TOKEN_NAME)?.value || null;
+    }
+  }
+  
+  export async function getRefreshToken() {
+    if (isBrowser) {
+      const match = document.cookie.match(/auth-refresh-token=([^;]+)/);
+      return match?.[1] || null;
+    } else {
+      const { cookies } = await import("next/headers");
+      const cookieStore = cookies();
+      return cookieStore.get(REFRESH_NAME)?.value || null;
+    }
+  }
 
 
 export async function setToken(authToken) {

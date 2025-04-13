@@ -32,9 +32,11 @@ export default function CreateCampaignPage() {
 
     try {
       // The POST request goes directly to Django on port 8001.
-      const res = await fetch("http://localhost:8001/api/campaigns/create/", {
+      const res = await fetch("/api/campaigns/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
@@ -48,7 +50,7 @@ export default function CreateCampaignPage() {
       const result = await res.json();
 
       // Redirect to the new campaign's detail page (assuming result.id is returned)
-      router.push(`/campaigns/${result.id}`);
+      router.push(`/dashboard/my-campaigns`);
     } catch (err) {
       console.error("Failed to create campaign:", err);
       setError("Failed to create campaign. " + err.message);
