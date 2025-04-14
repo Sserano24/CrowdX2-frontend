@@ -1,29 +1,30 @@
-"use client"
-import useSWR from 'swr';
+"use client";
+
+import useSWR from "swr";
 import { useEffect } from "react";
-import { useAuth } from '@/components/authProvider';
+import { useAuth } from "@/components/authProvider";
 import Link from "next/link";
 
 import {
   AppSidebar,
   SidebarItem
-} from "@/components/app-sidebar"
+} from "@/components/app-sidebar";
 
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
+  BreadcrumbList
+} from "@/components/ui/breadcrumb";
 
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
+// Fetcher function for SWR
 const fetcher = async (url) => {
   const res = await fetch(url);
   if (res.status === 401) {
@@ -56,8 +57,10 @@ export default function DashboardPage() {
     <SidebarProvider>
       <AppSidebar>
         <SidebarItem label="All Campaigns" href="/dashboard" />
-        <SidebarItem label="My 6Campaigns" href="/dashboard/my-campaigns" />
-        <SidebarItem label="Create Campaign" href="/create" />
+        <SidebarItem label="My Campaigns" href="/dashboard/my-campaigns" />
+        <SidebarItem label="Create Campaignnn" href="/create" />
+        {/* New sidebar link for on-chain campaigns */}
+        <SidebarItem label="Blockchain Campaigns" href="/dashboard/blockchain-campaigns" />
         <SidebarItem label="Edit Account" href="/dashboard/account" />
         <SidebarItem label="Logout" href="/logout" />
       </AppSidebar>

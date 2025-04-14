@@ -45,6 +45,11 @@ export function AppSidebar(props) {
         <SidebarItem label="All Campaigns" href="/dashboard" icon={ListChecks} />
         <SidebarItem label="My Campaigns" href="/dashboard/my-campaigns" icon={User} />
         <SidebarItem label="Create Campaign" href="/create" icon={PlusSquare} />
+        <SidebarItem
+          label="Blockchain Campaigns"
+          href="/dashboard/blockchain-campaigns"
+          icon={LayoutDashboard}
+        />
         <SidebarItem label="Edit Account" href="/dashboard/account" icon={Settings2} />
         <SidebarItem label="Logout" href="/logout" icon={LogOut} />
       </SidebarContent>
