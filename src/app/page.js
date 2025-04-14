@@ -61,7 +61,7 @@ export default function Home() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="flex justify-center gap-4"
         >
-          <Link href="/campaigns" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-lg transition-all">
+          <Link href="/dashboard" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-lg transition-all">
             🚀 Explore Campaigns
           </Link>
           <Link href="/create" className="px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 text-lg font-medium rounded-xl transition-all">
