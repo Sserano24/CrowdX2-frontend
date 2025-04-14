@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 export default function CreateCampaignPage() {
   const router = useRouter();
 
-  // State variables for the form fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [goalAmount, setGoalAmount] = useState("");
@@ -15,41 +14,35 @@ export default function CreateCampaignPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    // Prepare the payload to match the Django API schema.
     const payload = {
       title,
       description,
       goal_amount: Number(goalAmount),
-      start_date: startDate, // expects an ISO format date e.g. "2025-04-10"
-      end_date: endDate,     // also an ISO date; can be empty if not provided
+      start_date: startDate,
+      end_date: endDate,
     };
 
     try {
-      // The POST request goes directly to Django on port 8001.
       const res = await fetch("/api/campaigns/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // 🧠 include cookies in the request
         body: JSON.stringify(payload),
       });
 
-      // If the response is not OK, throw an error.
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(errorText || "Failed to create campaign.");
       }
 
-      // Parse the JSON response
       const result = await res.json();
-
-      // Redirect to the new campaign's detail page (assuming result.id is returned)
       router.push(`/dashboard/my-campaigns`);
     } catch (err) {
       console.error("Failed to create campaign:", err);

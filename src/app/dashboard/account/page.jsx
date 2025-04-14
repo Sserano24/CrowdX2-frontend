@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getToken } from "@/lib/auth";
 
 export default function AccountPage() {
   const [user, setUser] = useState(null);
@@ -12,11 +11,9 @@ export default function AccountPage() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const token = await getToken();
-        const res = await fetch("http://localhost:8001/api/accounts/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await fetch("/api/account", {
+          method: "GET",
+          credentials: "include", // 🔒 ensure cookies (tokens) are included
         });
 
         if (!res.ok) {
