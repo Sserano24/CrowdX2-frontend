@@ -27,6 +27,13 @@ contract CrowdXCampaign {
         address indexed creator
     );
 
+    // ←— NEW event
+    event DonationReceived(
+        uint indexed campaignId,
+        address indexed donor,
+        uint amount
+    );
+
     function createCampaign(
         string memory _title,
         string memory _description,
@@ -61,5 +68,19 @@ contract CrowdXCampaign {
         );
 
         campaignCounter++;
+    }
+
+    /// @notice Donate ETH to an existing campaign
+    function donateCampaign(uint _campaignId) external payable {
+        Campaign storage c = campaigns[_campaignId];
+        require(c.exists,             "Campaign not found");
+        require(msg.value > 0,        "Must send ETH");
+        require(block.timestamp >= c.startTime, "Not started");
+        require(block.timestamp <= c.endTime,   "Already ended");
+
+        // bump raised amount
+        c.currentAmount += msg.value;
+
+        emit DonationReceived(_campaignId, msg.sender, msg.value);
     }
 }
