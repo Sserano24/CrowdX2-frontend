@@ -7,14 +7,7 @@ export default function About() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-100 dark:from-black dark:to-gray-900 text-gray-800 dark:text-white">
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur shadow-md dark:bg-black/80 sticky top-0 z-50">
-        <h1 className="text-2xl font-bold text-blue-600">CrowdX</h1>
-        <div className="flex gap-6 text-sm font-medium">
-          <Link href="/signup" className="hover:text-blue-600 transition">Sign Up</Link>
-          <Link href="/login" className="hover:text-blue-600 transition">Login</Link>
-          <Link href="/" className="hover:text-blue-600 transition">Home</Link>
-        </div>
-      </nav>
+      
 
       {/* Hero Section */}
       <section className="relative w-full flex flex-col items-center justify-center text-center py-24 px-6 bg-gradient-to-br from-blue-50 to-white dark:from-gray-950 dark:to-black overflow-hidden">

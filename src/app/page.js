@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 import { ShieldCheckIcon, UsersIcon, LightBulbIcon } from '@heroicons/react/24/outline';
 import { motion } from "framer-motion";
+
 
 export default function Home() {
   const features = [
@@ -25,15 +26,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-gradient-to-b from-white to-gray-100 dark:from-black dark:to-gray-900">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur shadow-md dark:bg-black/80 dark:text-white sticky top-0 z-50">
-        <h1 className="text-2xl font-bold text-blue-600">CrowdX</h1>
-        <div className="flex gap-6 text-sm font-medium">
-          <Link href="/signup" className="hover:text-blue-600 transition">Sign Up</Link>
-          <Link href="/login" className="hover:text-blue-600 transition">Login</Link>
-          <Link href="/about" className="hover:text-blue-600 transition">About</Link>
-        </div>
-      </nav>
 
       {/* Hero Section */}
       <section className="relative text-center py-28 px-6 bg-gradient-to-br from-blue-50 to-white dark:from-gray-950 dark:to-black overflow-hidden">
@@ -61,10 +53,16 @@ export default function Home() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="flex justify-center gap-4"
         >
-          <Link href="/dashboard" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-lg transition-all">
+          <Link
+            href="/dashboard"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-lg transition-all"
+          >
             🚀 Explore Campaigns
           </Link>
-          <Link href="/create" className="px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 text-lg font-medium rounded-xl transition-all">
+          <Link
+            href="/create"
+            className="px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 text-lg font-medium rounded-xl transition-all"
+          >
             ✨ Start a Campaign
           </Link>
         </motion.div>
@@ -76,15 +74,15 @@ export default function Home() {
       <section className="py-20 px-6 text-center">
         <h3 className="text-3xl font-bold mb-12 text-gray-800 dark:text-white">Why Choose CrowdX?</h3>
         <div className="grid sm:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          {features.map((feature, index) => (
+          {features.map((feature, i) => (
             <motion.div
-              key={index}
+              key={i}
               className="flex flex-col items-center gap-4 p-6 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow"
               whileHover={{ scale: 1.05 }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: i * 0.1 }}
             >
               {feature.icon}
               <h4 className="text-xl font-semibold text-blue-600">{feature.title}</h4>
@@ -109,20 +107,20 @@ export default function Home() {
             },
             {
               title: "3. Achieve Your Goals",
-              steps: ["Receive funds milestone-by-milestone.", "Deliver results transparently."]
-            }
-          ].map((step, index) => (
+              steps: ["Receive funds milestone-by-milestone.", "Deliver results transparently."],
+            },
+          ].map((block, idx) => (
             <motion.div
-              key={index}
+              key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.2 }}
+              transition={{ delay: idx * 0.2 }}
               className="flex flex-col gap-3 bg-white dark:bg-gray-900 p-6 rounded-xl shadow hover:shadow-lg transition-shadow"
             >
-              <h4 className="text-xl font-semibold text-blue-700">{step.title}</h4>
+              <h4 className="text-xl font-semibold text-blue-700">{block.title}</h4>
               <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
-                {step.steps.map((line, i) => <li key={i}>{line}</li>)}
+                {block.steps.map((step, j) => <li key={j}>{step}</li>)}
               </ul>
             </motion.div>
           ))}
