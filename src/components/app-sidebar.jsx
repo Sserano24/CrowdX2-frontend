@@ -50,8 +50,7 @@ export function AppSidebar(props) {
           href="/dashboard/blockchain-campaigns"
           icon={LayoutDashboard}
         />
-        <SidebarItem label="Edit Account" href="/dashboard/account" icon={Settings2} />
-        <SidebarItem label="Logout" href="/logout" icon={LogOut} />
+
       </SidebarContent>
 
       <SidebarFooter>

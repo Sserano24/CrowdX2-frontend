@@ -44,6 +44,11 @@ export default function AccountPage() {
       <div className="max-w-2xl mx-auto bg-[#1a1a1a] p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-4">Account Info</h1>
 
+        {/* 🔲 Profile Image Placeholder */}
+        <div className="w-32 h-32 rounded-full bg-gray-700 mb-4 mx-auto flex items-center justify-center">
+          <span className="text-gray-400 text-sm">Profile Image</span>
+        </div>
+
         <div className="space-y-3">
           <div>
             <span className="font-semibold">Username:</span>{" "}
@@ -62,8 +67,31 @@ export default function AccountPage() {
             <span className="text-gray-300">{user.last_name || "—"}</span>
           </div>
           <div>
+            <span className="font-semibold">Bio:</span>{" "}
+            <span className="text-gray-300">{user.bio || "—"}</span>
+          </div>
+          <div>
             <span className="font-semibold">Phone:</span>{" "}
             <span className="text-gray-300">{user.phone_number || "—"}</span>
+          </div>
+          <div>
+            <span className="font-semibold">Wallet Address:</span>{" "}
+            <span className="text-gray-300">{user.wallet_address || "—"}</span>
+          </div>
+          <div>
+            <span className="font-semibold">Profile Link:</span>{" "}
+            {user.links ? (
+              <a
+                href={user.links}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:underline"
+              >
+                {user.links}
+              </a>
+            ) : (
+              <span className="text-gray-300">—</span>
+            )}
           </div>
         </div>
 

@@ -41,8 +41,6 @@ export default function DashboardPage() {
         <SidebarItem label="My Campaigns" href="/dashboard/my-campaigns" />
         <SidebarItem label="Create Campaign" href="/create" />
         <SidebarItem label="Blockchain Campaigns" href="/dashboard/blockchain-campaigns" />
-        <SidebarItem label="Edit Account" href="/dashboard/account" />
-        <SidebarItem label="Logout" href="/logout" />
       </AppSidebar>
 
       {/* NOTE: removed the header entirely */}

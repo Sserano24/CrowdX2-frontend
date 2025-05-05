@@ -1,4 +1,6 @@
 "use client"
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import {
   BadgeCheck,
@@ -30,10 +32,29 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavUser({
-  user
-}) {
-  const { isMobile } = useSidebar()
+export function NavUser() {
+  const { isMobile } = useSidebar();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/account", {
+          method: "GET",
+          credentials: "include", // required for cookies
+        });
+        if (!res.ok) throw new Error("Unauthorized");
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error("Failed to fetch user", err);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
+  if (!user) return null; // or loading indicator
 
   return (
     <SidebarMenu>
@@ -44,11 +65,11 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage src={user.avatar} alt={user.first_name} />
+                <AvatarFallback className="rounded-lg">X</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user.first_name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -63,10 +84,10 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">X</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{user.first_name}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
@@ -80,10 +101,12 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/account">
+                <BadgeCheck className="mr-2 h-4 w-4" />
                 Account
-              </DropdownMenuItem>
+              </Link>
+            </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing
@@ -94,9 +117,11 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem asChild>
+              <Link href="/logout">
+                <BadgeCheck className="mr-2 h-4 w-4" />
+                Log out
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
