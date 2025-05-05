@@ -6,7 +6,8 @@ import { ethers } from "ethers";
 import contractArtifact from "@/lib/CrowdXCampaign.json";
 
 const contractABI = contractArtifact.abi;
-const contractAddress = "0x70B64A0DE54dcBd857B08742d42773303a88e1ef";
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+
 
 export default function CreateCampaignPage() {
   const router = useRouter();
@@ -25,7 +26,9 @@ export default function CreateCampaignPage() {
 
     try {
       if (!window.ethereum) throw new Error("MetaMask not detected");
+
       await window.ethereum.request({ method: "eth_requestAccounts" });
+
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
@@ -41,6 +44,7 @@ export default function CreateCampaignPage() {
         startTs,
         endTs
       );
+
       await tx.wait();
       router.push("/dashboard/blockchain-campaigns");
     } catch (err) {
@@ -65,7 +69,6 @@ export default function CreateCampaignPage() {
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   Title
@@ -75,10 +78,9 @@ export default function CreateCampaignPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2"
                 />
               </div>
-              {/* Goal Amount */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   Goal Amount (ETH)
@@ -89,12 +91,11 @@ export default function CreateCampaignPage() {
                   value={goalAmount}
                   onChange={(e) => setGoalAmount(e.target.value)}
                   required
-                  className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2"
                 />
               </div>
             </div>
 
-            {/* Description (full width) */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
                 Description
@@ -104,12 +105,11 @@ export default function CreateCampaignPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 required
-                className="w-full bg-gray-700 text-white placeholder-gray-400 border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Start Date */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   Start Date
@@ -119,10 +119,9 @@ export default function CreateCampaignPage() {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   required
-                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2"
                 />
               </div>
-              {/* End Date */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   End Date
@@ -132,7 +131,7 @@ export default function CreateCampaignPage() {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   required
-                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2"
                 />
               </div>
             </div>
@@ -140,7 +139,7 @@ export default function CreateCampaignPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-md shadow-lg hover:from-indigo-700 hover:to-purple-700 transition"
+              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-md hover:from-indigo-700 hover:to-purple-700 transition"
             >
               {loading ? "Creating..." : "Create Campaign"}
             </button>

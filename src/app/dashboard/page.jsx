@@ -1,16 +1,15 @@
 "use client";
 
 import useSWR from "swr";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { ethers } from "ethers";
 import { useAuth } from "@/components/authProvider";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import contractArtifact from "@/lib/CrowdXCampaign.json";
 
 import { AppSidebar, SidebarItem } from "@/components/app-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 const fetcher = async (url) => {
   const res = await fetch(url, { credentials: "include" });
@@ -20,19 +19,62 @@ const fetcher = async (url) => {
 };
 
 const CAMPAIGN_API_URL = "/api/campaigns";
+const LOCAL_RPC_URL = "http://127.0.0.1:8545";
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const contractABI = contractArtifact.abi;
 
 export default function DashboardPage() {
   const auth = useAuth();
-  const { data: campaigns, error, isLoading } = useSWR(CAMPAIGN_API_URL, fetcher);
+  const { data: dbCampaigns, error, isLoading } = useSWR(CAMPAIGN_API_URL, fetcher);
+  const [chainCampaigns, setChainCampaigns] = useState([]);
 
   useEffect(() => {
     if (error?.status === 401) auth.loginRequiredRedirect();
   }, [error, auth]);
 
-  if (isLoading) return <p className="p-6 text-center">Loading campaigns…</p>;
-  if (error)    return <p className="p-6 text-center text-red-500">Error loading campaigns.</p>;
+  useEffect(() => {
+    const fetchChainCampaigns = async () => {
+      try {
+        const provider = new ethers.providers.JsonRpcProvider(LOCAL_RPC_URL);
+        const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-  const isEmpty = Array.isArray(campaigns) && campaigns.length === 0;
+        const counter = (await contract.campaignCounter()).toNumber();
+
+        const calls = [];
+        for (let i = 1; i < counter; i++) {
+          calls.push(contract.viewCampaign(i));
+        }
+
+        const results = await Promise.all(calls);
+
+        const formatted = results.map((c, i) => ({
+          id: `onchain-${i + 1}`,
+          title: c[0],
+          description: c[1],
+          creator: { username: c[6].slice(0, 6) + "..." },
+          goal_amount: ethers.utils.formatEther(c[2]),
+          total_raised: ethers.utils.formatEther(c[3]),
+          funds_claimed: c[9],
+        }));
+
+        setChainCampaigns(formatted);
+      } catch (err) {
+        console.error("Error fetching on-chain campaigns:", err);
+      }
+    };
+
+    fetchChainCampaigns();
+  }, []);
+
+  const allCampaigns = [
+    ...(Array.isArray(dbCampaigns) ? dbCampaigns : []),
+    ...chainCampaigns,
+  ];
+
+  const isEmpty = allCampaigns.length === 0;
+
+  if (isLoading) return <p className="p-6 text-center">Loading campaigns…</p>;
+  if (error) return <p className="p-6 text-center text-red-500">Error loading campaigns.</p>;
 
   return (
     <SidebarProvider>
@@ -41,9 +83,10 @@ export default function DashboardPage() {
         <SidebarItem label="My Campaigns" href="/dashboard/my-campaigns" />
         <SidebarItem label="Create Campaign" href="/create" />
         <SidebarItem label="Blockchain Campaigns" href="/dashboard/blockchain-campaigns" />
+        <SidebarItem label="Edit Account" href="/dashboard/account" />
+        <SidebarItem label="Logout" href="/logout" />
       </AppSidebar>
 
-      {/* NOTE: removed the header entirely */}
       <SidebarInset className="p-6 bg-white/90 dark:bg-gray-900 flex-1 overflow-auto">
         {isEmpty ? (
           <div className="text-center py-20">
@@ -71,34 +114,23 @@ export default function DashboardPage() {
               </motion.div>
             </Link>
 
-            {/* existing campaigns */}
-            {campaigns.map((c) => (
+            {allCampaigns.map((c) => (
               <Link key={c.id} href={`/campaigns/${c.id}`}>
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="flex flex-col justify-between bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition cursor-pointer"
                 >
-                  <div>
-                    <h3 className="text-lg font-semibold">{c.title}</h3>
-                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                      {c.description}
-                    </p>
-                  </div>
+                  <h3 className="text-lg font-semibold">{c.title}</h3>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                    {c.description}
+                  </p>
                   <div className="mt-4 text-sm space-y-1">
-                    <p>
-                      👤 By:{" "}
-                      <span className="font-medium">
-                        {c.creator?.username || "—"}
-                      </span>
-                    </p>
-                    <p>
-                      🎯 Goal:{" "}
-                      <span className="font-medium">${c.goal_amount}</span>
-                    </p>
-                    <p>
-                      💰 Raised:{" "}
-                      <span className="font-medium">${c.current_amount}</span>
-                    </p>
+                    <p>👤 By: <span className="font-medium">{c.creator?.username || "—"}</span></p>
+                    <p>🎯 Goal: <span className="font-medium">{c.goal_amount} ETH</span></p>
+                    <p>💰 Total Raised: <span className="font-medium">{c.total_raised} ETH</span></p>
+                    {c.funds_claimed !== undefined && (
+                      <p>🏦 Funds Claimed: {c.funds_claimed ? "✅ Yes" : "❌ No"}</p>
+                    )}
                   </div>
                 </motion.div>
               </Link>
