@@ -1,26 +1,27 @@
 import { cookies } from "next/headers";
 
 const TOKEN_AGE = 3600;
-const TOKEN_NAME = "auth-token";
+const TOKEN_ACCESS_NAME = "auth-token";
 const TOKEN_REFRESH_NAME = "auth-refresh-token";
 const DJANGO_TOKEN_REFRESH_URL = "http://localhost:8001/api/token/refresh";
+const DJANGO_VERIFY_URL = "http://127.0.0.1:8001/api/token/verify/";
 
-// Get the access token from server-side cookies
-export async function getToken() {
+// ========== Token Accessors ==========
+
+export async function getAccessToken() {
   const cookieStore = await cookies();
-  return cookieStore.get(TOKEN_NAME)?.value || null;
+  return cookieStore.get(TOKEN_ACCESS_NAME)?.value || null;
 }
 
-// Get the refresh token from server-side cookies
 export async function getRefreshToken() {
   const cookieStore = await cookies();
   return cookieStore.get(TOKEN_REFRESH_NAME)?.value || null;
 }
 
-// Set the access token as an HttpOnly cookie
-export async function setToken(authToken) {
+
+export async function setAccessToken(token) {
   const cookieStore = await cookies();
-  await cookieStore.set(TOKEN_NAME, authToken, {
+  await cookieStore.set(TOKEN_ACCESS_NAME, token, {
     httpOnly: true,
     sameSite: "strict",
     secure: process.env.NODE_ENV !== "development",
@@ -29,10 +30,9 @@ export async function setToken(authToken) {
   });
 }
 
-// Set the refresh token
-export async function setRefreshToken(authRefreshToken) {
+export async function setRefreshToken(token) {
   const cookieStore = await cookies();
-  await cookieStore.set(TOKEN_REFRESH_NAME, authRefreshToken, {
+  await cookieStore.set(TOKEN_REFRESH_NAME, token, {
     httpOnly: true,
     sameSite: "strict",
     secure: process.env.NODE_ENV !== "development",
@@ -41,41 +41,71 @@ export async function setRefreshToken(authRefreshToken) {
   });
 }
 
-// Delete both tokens
-export async function deleteToken() {
+
+export async function deleteTokens() {
   const cookieStore = await cookies();
-  await cookieStore.delete(TOKEN_NAME);
+  await cookieStore.delete(TOKEN_ACCESS_NAME);
   await cookieStore.delete(TOKEN_REFRESH_NAME);
 }
 
-// 🔁 Try to refresh the access token if expired
+
+// ========== Token Verification & Refresh ==========
+
+async function verifyAccessToken(token) {
+  if (!token) return false;
+
+  try {
+    const res = await fetch(DJANGO_VERIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function refreshAccessToken() {
-  const refreshToken = await getRefreshToken();
-  if (!refreshToken) return null;
+  const refresh = await getRefreshToken();
+  if (!refresh) return null;
 
   try {
     const res = await fetch(DJANGO_TOKEN_REFRESH_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ refresh: refreshToken }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh }),
     });
 
     if (!res.ok) {
-      console.warn("🔁 Token refresh failed:", await res.text());
+      console.warn("Token refresh failed:", await res.text());
       return null;
     }
 
     const data = await res.json();
     if (data.access) {
-      await setToken(data.access);
+      await setAccessToken(data.access);
       return data.access;
     }
 
     return null;
-  } catch (err) {
-    console.error("🔁 Failed to refresh token:", err);
+  } catch (error) {
+    console.error("Refresh error:", error);
     return null;
   }
+}
+
+// ========== Protected Token Wrapper ==========
+
+export async function withValidAccessToken(callback) {
+  let access = await getAccessToken();
+
+  const isValid = await verifyAccessToken(access);
+
+  if (!isValid) {
+    access = await refreshAccessToken();
+    if (!access) throw new Error("Session expired. Please log in again.");
+  }
+
+  return callback(access);
 }

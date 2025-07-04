@@ -1,13 +1,8 @@
-import { deleteToken } from "@/lib/auth";
+// File: /app/api/logout/route.js
+import { deleteTokens } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
-    try {
-        deleteToken(); // ✅ Await the token deletion
-
-        return NextResponse.json({ message: "Logged out successfully" }, { status: 200 }); // ✅ Corrected response
-    } catch (error) {
-        console.error("Logout Error:", error);
-        return NextResponse.json({ error: "Logout failed" }, { status: 500 });
-    }
+export async function POST() {
+  await deleteTokens(); // this can safely use cookies()
+  return NextResponse.json({ success: true });
 }

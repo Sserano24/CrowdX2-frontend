@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { ShieldCheckIcon, UsersIcon, LightBulbIcon } from '@heroicons/react/24/outline';
 import { motion } from "framer-motion";
+import Spline from '@splinetool/react-spline/next';
+
 
 
 export default function Home() {
@@ -37,6 +39,7 @@ export default function Home() {
         >
           Fuel Your Dreams with <span className="text-blue-600">CrowdX</span>
         </motion.h2>
+       
 
         <motion.p
           initial={{ opacity: 0, y: 10 }}

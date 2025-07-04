@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-const SIGNUP_URL = "/api/signup"; // ✅ calls your own Next.js server action
+const SIGNUP_URL = "http://127.0.0.1:8001/api/accounts/register";
 
 
 export default function Page() {

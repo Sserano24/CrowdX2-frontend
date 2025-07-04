@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
@@ -13,12 +13,10 @@ export default function AccountPage() {
       try {
         const res = await fetch("/api/account", {
           method: "GET",
-          credentials: "include", // 🔒 ensure cookies (tokens) are included
+          credentials: "include",
         });
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch user info");
-        }
+        if (!res.ok) throw new Error("Failed to fetch user info");
 
         const data = await res.json();
         setUser(data);
@@ -44,42 +42,20 @@ export default function AccountPage() {
       <div className="max-w-2xl mx-auto bg-[#1a1a1a] p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold mb-4">Account Info</h1>
 
-        {/* 🔲 Profile Image Placeholder */}
         <div className="w-32 h-32 rounded-full bg-gray-700 mb-4 mx-auto flex items-center justify-center">
           <span className="text-gray-400 text-sm">Profile Image</span>
         </div>
 
         <div className="space-y-3">
-          <div>
-            <span className="font-semibold">Username:</span>{" "}
-            <span className="text-gray-300">{user.username}</span>
-          </div>
-          <div>
-            <span className="font-semibold">Email:</span>{" "}
-            <span className="text-gray-300">{user.email}</span>
-          </div>
-          <div>
-            <span className="font-semibold">First Name:</span>{" "}
-            <span className="text-gray-300">{user.first_name || "—"}</span>
-          </div>
-          <div>
-            <span className="font-semibold">Last Name:</span>{" "}
-            <span className="text-gray-300">{user.last_name || "—"}</span>
-          </div>
-          <div>
-            <span className="font-semibold">Bio:</span>{" "}
-            <span className="text-gray-300">{user.bio || "—"}</span>
-          </div>
-          <div>
-            <span className="font-semibold">Phone:</span>{" "}
-            <span className="text-gray-300">{user.phone_number || "—"}</span>
-          </div>
-          <div>
-            <span className="font-semibold">Wallet Address:</span>{" "}
-            <span className="text-gray-300">{user.wallet_address || "—"}</span>
-          </div>
-          <div>
-            <span className="font-semibold">Profile Link:</span>{" "}
+          <p><strong>Username:</strong> {user.username}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>First Name:</strong> {user.first_name || "—"}</p>
+          <p><strong>Last Name:</strong> {user.last_name || "—"}</p>
+          <p><strong>Bio:</strong> {user.bio || "—"}</p>
+          <p><strong>Phone:</strong> {user.phone_number || "—"}</p>
+          <p><strong>Wallet Address:</strong> {user.wallet_address || "—"}</p>
+          <p>
+            <strong>Profile Link:</strong>{" "}
             {user.links ? (
               <a
                 href={user.links}
@@ -90,15 +66,15 @@ export default function AccountPage() {
                 {user.links}
               </a>
             ) : (
-              <span className="text-gray-300">—</span>
+              "—"
             )}
-          </div>
+          </p>
         </div>
 
         <div className="mt-6">
           <button
             onClick={() => router.push("/dashboard/edit-account")}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
             ✏️ Edit Account
           </button>
