@@ -3,6 +3,8 @@
 import {
   setRefreshToken,
   setAccessToken,
+  getAccessToken,
+  getRefreshToken
 } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
@@ -10,6 +12,7 @@ const DJANGO_PAIR_URL = "http://127.0.0.1:8001/api/token/pair";
 
 export async function POST(request) {
   try {
+
     const requestData = await request.json();
     const jsonData = JSON.stringify(requestData);
 
@@ -36,10 +39,16 @@ export async function POST(request) {
     const { access, refresh } = responseData;
 
     // 🍪 Store both tokens in secure HttpOnly cookies
-    await setAccessToken(access);
-    await setRefreshToken(refresh);
+  await setAccessToken(access);
+  await setRefreshToken(refresh);
 
-    return NextResponse.json({ loggedIn: true }, { status: 200 });
+  // Print the saved tokens from cookies
+  const savedAccess = await getAccessToken();
+  const savedRefresh = await getRefreshToken();
+  console.log("[LOGIN ROUTE] Saved access token in cookies:", savedAccess);
+  console.log("[LOGIN ROUTE] Saved refresh token in cookies:", savedRefresh);
+
+  return NextResponse.json({ loggedIn: true }, { status: 200 });
 
   } catch (error) {
     console.error("Error Setting Tokens, check dhango api/token/pait", error);

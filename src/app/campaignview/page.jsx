@@ -1,24 +1,23 @@
-// ---------- Imports ----------
+// src/app/campaigns/[id]/page.jsx
 import React from "react";
-import { Coins, CreditCard, GraduationCap, Shield, Tag, Calendar, Users2, Sparkles } from "lucide-react";
-import { Button } from "../../../components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../components/ui/card";
-import { Badge } from "../../../components/ui/badge";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import {
+  Coins, CreditCard, GraduationCap, Shield, Tag, Calendar, Users2, Sparkles
+} from "lucide-react";
 
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+// If you have Separator component, uncomment this:
+// import { Separator } from "../../../components/ui/separator";
 
-
-// ---------- Helpers ----------
-
-// Progress bar for funding
+/** ---------- Small helpers ---------- */
 const ProgressBar = ({ value }) => (
   <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
     <div className="h-full bg-primary" style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
   </div>
 );
 
-// Format money values for display
 const formatMoney = (n) => {
   const x = Number(n || 0);
   if (x >= 1_000_000) return `$${(x / 1_000_000).toFixed(1)}M`;
@@ -26,7 +25,7 @@ const formatMoney = (n) => {
   return `$${x.toLocaleString()}`;
 };
 
-// Simple avatar (initials from name)
+// simple avatar (initials)
 function Avatar({ name = "User" }) {
   const initials = name
     .split(" ")
@@ -40,71 +39,67 @@ function Avatar({ name = "User" }) {
   );
 }
 
-// ---------- Data Fetch ----------
+/** ---------- Mock fallback ---------- */
+function mockCampaign(id) {
+  return {
+    id,
+    title: "Autonomous Robot Dog",
+    school: "Sacramento State",
+    description:
+      "Quadruped with vision, SLAM, and voice commands. Built with Jetson, ROS2, and depth cameras. Milestone-based funding with weekly updates and public demos.",
+    goal_amount: 5000,
+    current_amount: 3120,
+    tags: ["Robotics", "Computer Vision", "Embedded"],
+    images: [
+      "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1542831371-d531d36971e6?q=80&w=1600&auto=format&fit=crop",
+    ],
+    creator: { id: 10, name: "Alex Student" },
+    team_members: [
+      { id: 11, name: "Maya Vision" },
+      { id: 12, name: "Drew Controls" },
+    ],
+    is_sponsored: true,
+    sponsored_by: "Acme Robotics",
+    start_date: "2025-08-15",
+    end_date: "2025-12-10",
+    milestones: [
+      { title: "Gait & Balance", done: true },
+      { title: "SLAM Navigation", done: false },
+      { title: "Voice Commands", done: false },
+    ],
+    verified: true,
+  };
+}
 
-// Fetch campaign details from API, forwarding cookies for SSR
+/** ---------- Data fetch ---------- */
 async function getCampaign(id) {
   try {
-    const base = typeof window === "undefined" ? "http://localhost:3000" : "";
-    const url = `${base}/api/campaigns/${id}`;
-    let fetchOptions = { cache: "no-store" };
-    // Forward cookies for SSR (server-side)
-    if (typeof window === "undefined") {
-      const cookieStore = await cookies();
-      const cookieHeader = cookieStore?.getAll?.()
-        ?.map((c) => `${c.name}=${c.value}`)
-        .join("; ");
-      if (cookieHeader) {
-        fetchOptions.headers = { cookie: cookieHeader };
-      }
-    }
-    const res = await fetch(url, fetchOptions);
-
-    const ct = res.headers.get("content-type") || "";
-    if (!ct.includes("application/json")) {
-      const text = await res.text();
-      return { error: "Expected JSON from API", detail: text.slice(0, 300) };
-    }
-
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : ""}/api/campaigns/${id}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`API ${res.status}`);
     const data = await res.json();
-    if (!res.ok || data?.error) {
-      return { error: data?.error || `API ${res.status}` };
-    }
+    // expected shape example:
+    // {
+    //   id, title, description, goal_amount, current_amount, school, tags:[],
+    //   images:[], creator:{id,name}, team_members:[{id,name},...],
+    //   is_sponsored, sponsored_by, start_date, end_date, milestones:[{title,done}], verified
+    // }
     return data;
   } catch {
-    return { error: "Failed to fetch campaign" };
+    // fallback to mock so page renders during wiring
+    return mockCampaign(id);
   }
 }
 
-// ---------- Page Component ----------
-
 export default async function CampaignPage({ params }) {
-  // Get campaign id from params
-  const { id } = await params;
-  // Fetch campaign data
+  const { id } = params;
   const c = await getCampaign(id);
+  if (!c) return notFound();
 
-  // Error handling: show error message if fetch fails
-  if (!c || c.error) 
-    redirect("/login");
-
-
-  // Calculate funding progress percentage
   const pct = c.goal_amount > 0 ? Math.round((Number(c.current_amount) / Number(c.goal_amount)) * 100) : 0;
-    // Get logged-in user info (from campaign data or token, adjust as needed)
-    let loggedInUserId = null;
-    try {
-      const token = await getAccessToken();
-      if (token && c?.current_user) {
-        loggedInUserId = c.current_user.id;
-      }
-    } catch {}
-
-    // Helper: check if user is creator or team member
-    const isEditor = loggedInUserId && (
-      c.creator?.id === loggedInUserId ||
-      (Array.isArray(c.team_members) && c.team_members.some(m => m.id === loggedInUserId))
-    );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/40">
@@ -151,12 +146,6 @@ export default async function CampaignPage({ params }) {
           <div className="lg:col-span-2 space-y-6">
             {/* Gallery */}
             <Card className="rounded-2xl">
-                {/* Edit button for gallery card */}
-                {isEditor && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </div>
-                )}
               <CardContent className="p-4">
                 {Array.isArray(c.images) && c.images.length > 0 ? (
                   <div className="grid grid-cols-12 gap-3">
@@ -183,12 +172,6 @@ export default async function CampaignPage({ params }) {
 
             {/* About */}
             <Card className="rounded-2xl">
-                {/* Edit button for about card */}
-                {isEditor && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </div>
-                )}
               <CardHeader>
                 <CardTitle>About this project</CardTitle>
                 <CardDescription>Overview, goals, and approach</CardDescription>
@@ -225,12 +208,6 @@ export default async function CampaignPage({ params }) {
 
             {/* Milestones */}
             <Card className="rounded-2xl">
-                {/* Edit button for milestones card */}
-                {isEditor && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </div>
-                )}
               <CardHeader>
                 <CardTitle>Milestones</CardTitle>
                 <CardDescription>Track progress across key deliverables</CardDescription>
@@ -306,17 +283,15 @@ export default async function CampaignPage({ params }) {
                   <div className="text-xs text-muted-foreground mb-1">Team Members</div>
                   {Array.isArray(c.team_members) && c.team_members.length > 0 ? (
                     <div className="flex flex-col gap-2">
-                      {c.team_members.map((m) => {
-                        return (
-                          <div key={m.id} className="flex items-center gap-3">
-                            <Avatar name={m.name} />
-                            <div className="text-sm">
-                              <div className="font-medium">{m.name}</div>
-                              <div className="text-muted-foreground">Contributor</div>
-                            </div>
+                      {c.team_members.map((m) => (
+                        <div key={m.id} className="flex items-center gap-3">
+                          <Avatar name={m.name} />
+                          <div className="text-sm">
+                            <div className="font-medium">{m.name}</div>
+                            <div className="text-muted-foreground">Contributor</div>
                           </div>
-                        );
-                      })}
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <div className="text-sm text-muted-foreground">No team members listed.</div>
