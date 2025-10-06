@@ -383,10 +383,10 @@ export default function CrowdXLanding() {
                 ))}
               </div>
               <div className="pt-4 flex gap-3">
-                <Button className="gap-2">
+                <Button className="gap-2" onClick={() => router.push("/")}>
                   <Search className="w-4 h-4" /> Explore Talent
                 </Button>
-                <Button variant="secondary" className="gap-2">
+                <Button variant="secondary" className="gap-2" onClick={() => router.push("/")}>
                   <Star className="w-4 h-4" /> Sponsor a Team
                 </Button>
               </div>

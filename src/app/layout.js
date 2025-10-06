@@ -22,8 +22,6 @@ export default async function RootLayout({ children }) {
   const token = await getAccessToken();                 // ✅ await
   const isValid = token ? await verifyAccessToken(token) : false; // ✅ await
 
-  // Optional: mask token if you ever log it
-  console.log("Is the user logged in? ", isValid);
 
   return (
     <html

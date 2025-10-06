@@ -47,8 +47,11 @@ function StatPill({ icon: Icon, label, value }) {
 }
 
 export default function ExploreProjectCard({ p }) {
+  // Prefer cover_image from API, then images[0], else fallback
   const cover =
-    p?.cover || (Array.isArray(p?.images) && p.images.length ? p.images[0] : "");
+    p?.cover_image ||
+    (Array.isArray(p?.images) && p.images.length ? p.images[0] : "");
+
   const pct =
     p?.goal > 0 ? Math.round((Number(p?.raised) / Number(p?.goal)) * 100) : 0;
   const href = p?.slug ? `/campaigns/${p.slug}` : `/campaigns/${p?.id}`;
@@ -65,7 +68,7 @@ export default function ExploreProjectCard({ p }) {
           />
         ) : (
           <div className="absolute inset-0 grid place-items-center bg-muted text-muted-foreground">
-            No image
+            No images
           </div>
         )}
 
@@ -145,11 +148,11 @@ export default function ExploreProjectCard({ p }) {
       {/* Footer actions */}
       <CardFooter className="p-5 pt-0 md:px-6">
         <Button asChild className="w-full gap-2">
-            <Link href={href}>
+          <Link href={href}>
             View Project <ArrowRight className="w-4 h-4" />
-            </Link>
+          </Link>
         </Button>
-        </CardFooter>
+      </CardFooter>
     </Card>
   );
 }

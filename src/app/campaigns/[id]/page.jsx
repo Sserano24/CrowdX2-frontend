@@ -91,20 +91,6 @@ export default async function CampaignPage({ params }) {
 
   // Calculate funding progress percentage
   const pct = c.goal_amount > 0 ? Math.round((Number(c.current_amount) / Number(c.goal_amount)) * 100) : 0;
-    // Get logged-in user info (from campaign data or token, adjust as needed)
-    let loggedInUserId = null;
-    try {
-      const token = await getAccessToken();
-      if (token && c?.current_user) {
-        loggedInUserId = c.current_user.id;
-      }
-    } catch {}
-
-    // Helper: check if user is creator or team member
-    const isEditor = loggedInUserId && (
-      c.creator?.id === loggedInUserId ||
-      (Array.isArray(c.team_members) && c.team_members.some(m => m.id === loggedInUserId))
-    );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/40">
@@ -151,12 +137,6 @@ export default async function CampaignPage({ params }) {
           <div className="lg:col-span-2 space-y-6">
             {/* Gallery */}
             <Card className="rounded-2xl">
-                {/* Edit button for gallery card */}
-                {isEditor && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </div>
-                )}
               <CardContent className="p-4">
                 {Array.isArray(c.images) && c.images.length > 0 ? (
                   <div className="grid grid-cols-12 gap-3">
@@ -183,12 +163,6 @@ export default async function CampaignPage({ params }) {
 
             {/* About */}
             <Card className="rounded-2xl">
-                {/* Edit button for about card */}
-                {isEditor && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </div>
-                )}
               <CardHeader>
                 <CardTitle>About this project</CardTitle>
                 <CardDescription>Overview, goals, and approach</CardDescription>
@@ -225,12 +199,6 @@ export default async function CampaignPage({ params }) {
 
             {/* Milestones */}
             <Card className="rounded-2xl">
-                {/* Edit button for milestones card */}
-                {isEditor && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </div>
-                )}
               <CardHeader>
                 <CardTitle>Milestones</CardTitle>
                 <CardDescription>Track progress across key deliverables</CardDescription>
